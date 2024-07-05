@@ -3,19 +3,36 @@
 namespace App\Services;
 
 use App\Models\Site;
+use App\Models\User;
+use Faker\Factory as Faker;
+use App\Traits\SingletonTrait;
 use Illuminate\Support\Facades\Auth;
 
 class ApplicationContext
 {
-    // Récupérer l'utilisateur actuellement authentifié
-    public function getCurrentUser()
+    use SingletonTrait;
+
+    private $currentSite;
+    private $currentUser;
+
+//     * Constructeur protégé initialisant le contexte de l'application
+//     * avec des données factices.
+    protected function __construct()
     {
-        return Auth::user();
+        $faker = Faker::create();
+        $this->currentSite = new Site(['id' => $faker->randomNumber(), 'url' => $faker->url]);
+        $this->currentUser = new User(['id' => $faker->randomNumber(), 'firstname' => $faker->firstName, 'lastname' => $faker->lastName, 'email' => $faker->email]);
     }
 
-    // Récupérer un site par défaut
+//Retourne le site actuel.
     public function getCurrentSite()
     {
-        return Site::first();
+        return $this->currentSite;
+    }
+
+// Retourne l'utilisateur actuel.
+    public function getCurrentUser()
+    {
+        return $this->currentUser;
     }
 }
